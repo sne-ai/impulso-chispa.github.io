@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tienda Moderna</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+    }
+    header {
+      background: #111;
+      color: #fff;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 { margin: 0; }
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+    }
+    nav ul li {
+      position: relative;
+    }
+    nav ul li a {
+      color: #fff;
+      text-decoration: none;
+      padding: 10px 15px;
+      display: block;
+    }
+    nav ul li:hover ul {
+      display: block;
+    }
+    nav ul ul {
+      display: none;
+      position: absolute;
+      background: #222;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+    nav ul ul li a {
+      padding: 10px;
+      width: 150px;
+    }
+
+    /* Carrusel */
+    .carousel {
+      position: relative;
+      max-width: 100%;
+      overflow: hidden;
+    }
+    .slides {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+      width: 300%;
+    }
+    .slides img {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+    }
+    .carousel button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.5);
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+    }
+    .prev { left: 10px; }
+    .next { right: 10px; }
+
+    /* Productos */
+    .productos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+    .producto {
+      background: #fff;
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .producto img {
+      width: 100%;
+      border-radius: 10px;
+    }
+    .producto button {
+      background: #111;
+      color: #fff;
+      border: none;
+      padding: 10px;
+      margin-top: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    /* Carrito */
+    #carrito {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 10px;
+      width: 200px;
+    }
+    #carrito h3 { margin: 0 0 10px; }
+
+    /* WhatsApp */
+    .whatsapp-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #25d366;
+      color: white;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 30px;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Tienda Moderna</h1>
+    <nav>
+      <ul>
+        <li><a href="#">Inicio</a></li>
+        <li><a href="#">Categorías</a>
+          <ul>
+            <li><a href="#">Ropa</a></li>
+            <li><a href="#">Accesorios</a></li>
+            <li><a href="#">Tecnología</a></li>
+          </ul>
+        </li>
+        <li><a href="#">Contacto</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Carrusel -->
+  <div class="carousel">
+    <div class="slides" id="slides">
+      <img src="https://picsum.photos/1200/400?random=1" alt="Imagen 1">
+      <img src="https://picsum.photos/1200/400?random=2" alt="Imagen 2">
+      <img src="https://picsum.photos/1200/400?random=3" alt="Imagen 3">
+    </div>
+    <button class="prev" onclick="moverSlide(-1)">&#10094;</button>
+    <button class="next" onclick="moverSlide(1)">&#10095;</button>
+  </div>
+
+  <!-- Productos -->
+  <section class="productos">
+    <div class="producto">
+      <img src="https://picsum.photos/200/200?random=4" alt="Producto 1">
+      <h3>Producto 1</h3>
+      <p>$20.00</p>
+      <button onclick="agregarCarrito('Producto 1', 20)">Agregar al carrito</button>
+    </div>
+    <div class="producto">
+      <img src="https://picsum.photos/200/200?random=5" alt="Producto 2">
+      <h3>Producto 2</h3>
+      <p>$35.00</p>
+      <button onclick="agregarCarrito('Producto 2', 35)">Agregar al carrito</button>
+    </div>
+    <div class="producto">
+      <img src="https://picsum.photos/200/200?random=6" alt="Producto 3">
+      <h3>Producto 3</h3>
+      <p>$50.00</p>
+      <button onclick="agregarCarrito('Producto 3', 50)">Agregar al carrito</button>
+    </div>
+  </section>
+
+  <!-- Carrito -->
+  <div id="carrito">
+    <h3>Carrito</h3>
+    <ul id="listaCarrito"></ul>
+    <p>Total: $<span id="total">0</span></p>
+  </div>
+
+  <!-- WhatsApp -->
+  <a href="https://wa.me/573001234567" class="whatsapp-btn" target="_blank">💬</a>
+
+  <script>
+    // Carrusel
+    let index = 0;
+    function moverSlide(n) {
+      const slides = document.getElementById('slides');
+      const totalSlides = slides.children.length;
+      index = (index + n + totalSlides) % totalSlides;
+      slides.style.transform = `translateX(-${index * 100}%)`;
+    }
+
+    // Carrito
+    let carrito = [];
+    function agregarCarrito(nombre, precio) {
+      carrito.push({nombre, precio});
+      renderCarrito();
+    }
+    function renderCarrito() {
+      const lista = document.getElementById('listaCarrito');
+      const total = document.getElementById('total');
+      lista.innerHTML = '';
+      let suma = 0;
+      carrito.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = `${item.nombre} - $${item.precio}`;
+        lista.appendChild(li);
+        suma += item.precio;
+      });
+      total.textContent = suma;
+    }
+  </script>
+</body>
+</html>
